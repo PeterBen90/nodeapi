@@ -5,6 +5,7 @@ const {
     postsByUser,
     postById,
     isPoster,
+    updatePost,
     deletePost
 } = require('../controllers/posts');
 const { requireLogin } = require('../controllers/auth');
@@ -13,7 +14,7 @@ const { createPostValidator } = require('../validators');
 
 const router = express.Router();
 
-router.get('/', getPosts);
+router.get('/posts', getPosts);
 router.post(
     '/post/new/:userId',
     requireLogin,
@@ -22,6 +23,7 @@ router.post(
 );
 router.get('/posts/by/:userId', requireLogin, postsByUser);
 router.delete('/post/:postId', requireLogin, isPoster, deletePost);
+router.put('/post/:postId', requireLogin, isPoster, updatePost);
 
 //any route containing :userId, app will first execute userById()
 router.param('userId', userById);

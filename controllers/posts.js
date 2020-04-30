@@ -1,6 +1,7 @@
 const Post = require('../models/posts');
 const formidable = require('formidable');
 const fs = require('fs');
+const _ = require('lodash');
 
 exports.postById = (req, res, next, id) => {
     Post.findById(id)
@@ -18,7 +19,7 @@ exports.postById = (req, res, next, id) => {
 
 exports.getPosts = (req, res) => {
     const posts = Post.find()
-        .populate('postedBy', '_.id username')
+        .populate('postedBy', '_id username')
         .select('_id title body')
         .then(posts => {
             res.json({ posts });
@@ -78,10 +79,10 @@ exports.isPoster = (req, res, next) => {
     let isPoster =
         req.post && req.auth && req.post.postedBy._id == req.auth._id;
 
-    //console.log('req.post ', req.post);
-    //console.log('req.auth', req.auth);
-    //console.log('req.post.postedBy._id', req.post.postedBy._id);
-    //console.log('req.auth._id', req.auth._id);
+    console.log('req.post ', req.post);
+    console.log('req.auth', req.auth);
+    console.log('req.post.postedBy._id', req.post.postedBy._id);
+    console.log('req.auth._id', req.auth._id);
 
     if (!isPoster) {
         return res.status(403).json({
@@ -89,6 +90,20 @@ exports.isPoster = (req, res, next) => {
         });
     }
     next();
+};
+
+exports.updatePost = (req, res, next) => {
+    let post = req.post;
+    post = _.extend(post, req.body);
+    post.updated = Date.now();
+    post.save(err => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            });
+        }
+        res.json(post);
+    });
 };
 
 exports.deletePost = (req, res) => {
@@ -100,7 +115,7 @@ exports.deletePost = (req, res) => {
             });
         }
         res.json({
-            message: 'Post was deleted successfully'
+            message: 'Post deleted successfully'
         });
     });
 };

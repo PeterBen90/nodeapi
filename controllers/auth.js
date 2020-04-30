@@ -34,7 +34,7 @@ exports.login = (req, res) => {
             });
         }
         //generate token with user id and secret
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
         //persist the token as the 'jwt-token' in cookie with expiry date
         res.cookie('jwt-token', token, { expire: new Date() + 9999 });
